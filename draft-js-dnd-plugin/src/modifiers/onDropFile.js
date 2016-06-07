@@ -52,12 +52,17 @@ export default function onDropFile(config) {
           // Success, remove 'progress' and 'src'
           let newEditorState = getEditorState();
           uploadedFiles.forEach(file => {
-            const blocks = getBlocksWhereEntityData(state, block => block.src === file.src && block.progress !== undefined);
+            const blocks = getBlocksWhereEntityData(state, block => block.name === file.name && block.progress !== undefined);
             if (blocks.size) {
               const newEditorStateOrBlockType = handleBlock
                 ? handleBlock(newEditorState, newEditorState.getSelection(), file)
                 : defaultBlockType;
               newEditorState = replaceBlock(newEditorState, blocks.first().get('key'), newEditorStateOrBlockType);
+              newEditorState = modifyBlockData(newEditorState, blocks.first.get('key'), {
+                progress: undefined,
+                src: undefined,
+                url: file.url,
+              });
             } /* else {
               const newEditorStateOrBlockType = handleBlock
                 ? handleBlock(newEditorState, newEditorState.getSelection(), file)
